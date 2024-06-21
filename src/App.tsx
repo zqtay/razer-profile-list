@@ -1,9 +1,9 @@
-import ProfileList from "./components/profilelist";
+import ProfilePage from "./components/profile";
 
 function App() {
   return (
     <div className="main-container">
-      <ProfileList />
+      <ProfilePage />
     </div>
   );
 }
