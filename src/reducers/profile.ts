@@ -38,6 +38,7 @@ const getInitialState = (): ProfileState => {
     ),
     isEditing: false,
     isDeleting: false,
+    isFirstLoad: true,
     profiles,
   };
 };
@@ -61,6 +62,7 @@ export const profileSlice = createSlice({
       };
       state.profiles.push(newProfile);
       state.selectedProfile = newProfile;
+      state.isFirstLoad = false;
     },
     editProfile: (state, action) => {
       if (!state.selectedProfile) return;
@@ -76,6 +78,7 @@ export const profileSlice = createSlice({
         }
       }
       state.isEditing = false;
+      state.isFirstLoad = false;
     },
     deleteProfile: (state) => {
       if (!state.selectedProfile) return;
@@ -93,35 +96,31 @@ export const profileSlice = createSlice({
       // Set selected profile to previous one
       state.selectedProfile = state.profiles.find((profile) => profile.order === selectedOrder);
       state.isDeleting = false;
+      state.isFirstLoad = false;
     },
     moveProfileUp: (state) => {
-      if (!state.selectedProfile) return;
-      const selectedId = state.selectedProfile.id;
-      const profile = state.profiles.find((profile) => profile.id === selectedId);
-      if (profile) {
-        const index = state.profiles.indexOf(profile);
-        if (index <= 0) return;
-        // Switch position with previous profile
-        const prevIndex = state.profiles.findIndex(e => e.order === profile.order - 1);
-        if (prevIndex === -1) return;
-        profile.order -= 1;
-        state.profiles[prevIndex].order += 1;
-        state.selectedProfile = profile;
-      }
+      const profile = state.profiles.find((profile) => profile.id === state.selectedProfile?.id);
+      if (!profile) return;
+      if (profile.order <= 0) return;
+      // Switch position with previous profile
+      const prevIndex = state.profiles.findIndex(e => e.order === profile.order - 1);
+      if (prevIndex === -1) return;
+      profile.order -= 1;
+      state.profiles[prevIndex].order += 1;
+      state.selectedProfile = profile;
+      state.isFirstLoad = false;
     },
     moveProfileDown: (state) => {
-      if (!state.selectedProfile) return;
-      const selectedId = state.selectedProfile.id;
-      const profile = state.profiles.find((profile) => profile.id === selectedId);
-      if (profile) {
-        if (profile.order >= state.profiles.length - 1) return;
-        // Switch position with next profile
-        const nextIndex = state.profiles.findIndex(e => e.order === profile.order + 1);
-        if (nextIndex === -1) return;
-        profile.order += 1;
-        state.profiles[nextIndex].order -= 1;
-        state.selectedProfile = profile;
-      }
+      const profile = state.profiles.find((profile) => profile.id === state.selectedProfile?.id);
+      if (!profile) return;
+      if (profile.order >= state.profiles.length - 1) return;
+      // Switch position with next profile
+      const nextIndex = state.profiles.findIndex(e => e.order === profile.order + 1);
+      if (nextIndex === -1) return;
+      profile.order += 1;
+      state.profiles[nextIndex].order -= 1;
+      state.selectedProfile = profile;
+      state.isFirstLoad = false;
     },
     // Frontend only
     showEdit: (state) => {

@@ -5,13 +5,17 @@ import { useSelector } from "react-redux";
 
 const AutoSave = () => {
   const profiles = useSelector((state: RootState) => state.profile.profiles);
+  const isFirstLoad = useSelector((state: RootState) => state.profile.isFirstLoad);
   const [timeoutId, setTimoutId] = useState<number | null>(null);
 
   useEffect(() => {
+    // Prevent auto save on first load
+    if (isFirstLoad) return;
     // Auto save to local storage
     localStorage.setItem("profiles", JSON.stringify(profiles));
+
+    // Stop ongoing timeout
     if (timeoutId) {
-      // Stop ongoing timeout
       clearTimeout(timeoutId);
     }
     // Save to server after 3 seconds
