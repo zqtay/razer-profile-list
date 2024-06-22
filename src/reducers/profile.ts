@@ -3,53 +3,48 @@ import { Profile, ProfileType } from '@/types/profile';
 import { generateRandomHexString } from "@/lib/utils";
 import { ProfileState } from "@/types/redux";
 
-const initialState: ProfileState = {
-  selectedProfile: undefined as Profile | undefined,
-  isEditing: false,
-  isDeleting: false,
-  profiles: [
-    {
-      id: generateRandomHexString(),
-      name: 'Default',
-      type: ProfileType.DEFAULT,
-      order: 0,
-    },
-    {
-      id: generateRandomHexString(),
-      name: 'Game',
-      type: ProfileType.DEFAULT,
-      order: 1,
-    },
-    {
-      id: generateRandomHexString(),
-      name: 'Movie',
-      type: ProfileType.DEFAULT,
-      order: 2,
-    },
-    {
-      id: generateRandomHexString(),
-      name: 'Music',
-      type: ProfileType.DEFAULT,
-      order: 3,
-    },
-    {
-      id: generateRandomHexString(),
-      name: 'Custom 1',
-      type: ProfileType.CUSTOM,
-      order: 4,
-    },
-    {
-      id: generateRandomHexString(),
-      name: 'Demo Long Text Demo Long',
-      type: ProfileType.CUSTOM,
-      order: 5,
-    },
-  ],
+const defaultProfiles = [
+  {
+    id: generateRandomHexString(),
+    name: 'Default',
+    type: ProfileType.DEFAULT,
+    order: 0,
+  },
+  {
+    id: generateRandomHexString(),
+    name: 'Game',
+    type: ProfileType.DEFAULT,
+    order: 1,
+  },
+  {
+    id: generateRandomHexString(),
+    name: 'Movie',
+    type: ProfileType.DEFAULT,
+    order: 2,
+  },
+  {
+    id: generateRandomHexString(),
+    name: 'Music',
+    type: ProfileType.DEFAULT,
+    order: 3,
+  },
+];
+
+const getInitialState = (): ProfileState => {
+  const profiles = localStorage.getItem('profiles') ? JSON.parse(localStorage.getItem('profiles') as string) : defaultProfiles;
+  return {
+    selectedProfile: profiles.find((profile: Profile) =>
+      profile.type === ProfileType.DEFAULT && profile.name === 'Default'
+    ),
+    isEditing: false,
+    isDeleting: false,
+    profiles,
+  };
 };
 
 export const profileSlice = createSlice({
   name: 'profile',
-  initialState: initialState,
+  initialState: getInitialState(),
   reducers: {
     selectProfile: (state, action) => {
       const profile = state.profiles.find((profile) => profile.id === action.payload);
