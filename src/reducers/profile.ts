@@ -1,29 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Profile, ProfileType } from '@/types/profile';
-import { generateRandomHexString } from "@/lib/utils";
 import { ProfileState } from "@/types/redux";
+import { randomUUID } from "crypto";
 
 const defaultProfiles = [
   {
-    id: generateRandomHexString(),
+    id: randomUUID(),
     name: 'Default',
     type: ProfileType.DEFAULT,
     order: 0,
   },
   {
-    id: generateRandomHexString(),
+    id: randomUUID(),
     name: 'Game',
     type: ProfileType.DEFAULT,
     order: 1,
   },
   {
-    id: generateRandomHexString(),
+    id: randomUUID(),
     name: 'Movie',
     type: ProfileType.DEFAULT,
     order: 2,
   },
   {
-    id: generateRandomHexString(),
+    id: randomUUID(),
     name: 'Music',
     type: ProfileType.DEFAULT,
     order: 3,
@@ -54,7 +54,7 @@ export const profileSlice = createSlice({
     },
     addCustomProfile: (state) => {
       const newProfile = {
-        id: generateRandomHexString(),
+        id: randomUUID(),
         name: 'New Profile',
         type: ProfileType.CUSTOM,
         order: state.profiles.length,
