@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Profile, ProfileType } from '@/types/profile';
 import { generateRandomHexString } from "@/lib/utils";
+import { ProfileState } from "@/types/redux";
 
-const initialState = {
+const initialState: ProfileState = {
   selectedProfile: undefined as Profile | undefined,
   profiles: [
     {
@@ -88,8 +89,11 @@ export const profileSlice = createSlice({
         const index = state.profiles.indexOf(profile);
         if (index <= 0) return;
         // Switch position with previous profile
-        state.profiles[index] = state.profiles[index - 1];
-        state.profiles[index - 1] = profile;
+        const prevIndex = state.profiles.findIndex(e => e.order === profile.order - 1);
+        if (prevIndex === -1) return;
+        profile.order -= 1;
+        state.profiles[prevIndex].order += 1;
+        state.selectedProfile = profile;
       }
     },
     moveProfileDown: (state) => {
@@ -97,11 +101,13 @@ export const profileSlice = createSlice({
       const selectedId = state.selectedProfile.id;
       const profile = state.profiles.find((profile) => profile.id === selectedId);
       if (profile) {
-        const index = state.profiles.indexOf(profile);
-        if (index >= state.profiles.length - 1) return;
+        if (profile.order >= state.profiles.length - 1) return;
         // Switch position with next profile
-        state.profiles[index] = state.profiles[index + 1];
-        state.profiles[index + 1] = profile;
+        const nextIndex = state.profiles.findIndex(e => e.order === profile.order + 1);
+        if (nextIndex === -1) return;
+        profile.order += 1;
+        state.profiles[nextIndex].order -= 1;
+        state.selectedProfile = profile;
       }
     },
   },
