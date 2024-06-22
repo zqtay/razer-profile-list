@@ -1,16 +1,38 @@
+import { selectProfile } from "@/reducers/profile";
+import { Profile, ProfileType } from "@/types/profile";
+import classNames from "classnames";
+import { FC, MouseEventHandler } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+type ProfileListItemProps = {
+  profile: Profile;
+  onClick: MouseEventHandler<HTMLDivElement>;
+  active?: boolean;
+};
+
 const SideBar = () => {
+  const profiles = useSelector((state: any) => state.profile.profiles);
+  const selectedProfile = useSelector((state: any) => state.profile.selectedProfile);
+  const dispatch = useDispatch();
+
+  const handleSelectProfile = (id: string) => {
+    dispatch(selectProfile(id));
+  };
+
   return <div className="thx-drawer flex">
     <div className="main-title">
       Profile List
     </div>
     <div id="profileWrapper" className="drawer-select flex">
       <div id="profileList" className="scrollable">
-        <div id="profile1" className="profile-item default no-edit ">Default</div>
-        <div id="profile2" className="profile-item game no-edit active">Game</div>
-        <div id="profile3" className="profile-item movie no-edit ">Movie</div>
-        <div id="profile4" className="profile-item music no-edit ">Music</div>
-        <div id="custom1" className="profile-item custom ">Custom 1</div>
-        <div id="custom2" className="profile-item custom ">Demo Long Text Demo Long</div>
+        {profiles.map((profile: Profile) => (
+          <ProfileListItem
+            key={profile.id}
+            profile={profile}
+            onClick={() => handleSelectProfile(profile.id)}
+            active={profile.id === selectedProfile?.id}
+          />
+        ))}
         <input
           id="profileRename"
           className="profile-item"
@@ -32,6 +54,21 @@ const SideBar = () => {
         <div className="thx-btn" id="cfmDelete">delete</div>
       </div>
     </div>
+  </div>;
+};
+
+export const ProfileListItem: FC<ProfileListItemProps> = ({ profile, onClick, active }) => {
+  return <div
+    className={
+      classNames("profile-item", {
+        "no-edit": profile.type === ProfileType.DEFAULT,
+        "custom": profile.type === ProfileType.CUSTOM,
+        "active": active,
+      })
+    }
+    onClick={onClick}
+  >
+    {profile.name}
   </div>;
 };
 
