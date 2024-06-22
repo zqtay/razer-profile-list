@@ -1,29 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Profile, ProfileType } from '@/types/profile';
 import { ProfileState } from "@/types/redux";
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 
 const defaultProfiles = [
   {
-    id: randomUUID(),
+    id: uuid(),
     name: 'Default',
     type: ProfileType.DEFAULT,
     order: 0,
   },
   {
-    id: randomUUID(),
+    id: uuid(),
     name: 'Game',
     type: ProfileType.DEFAULT,
     order: 1,
   },
   {
-    id: randomUUID(),
+    id: uuid(),
     name: 'Movie',
     type: ProfileType.DEFAULT,
     order: 2,
   },
   {
-    id: randomUUID(),
+    id: uuid(),
     name: 'Music',
     type: ProfileType.DEFAULT,
     order: 3,
@@ -54,7 +54,7 @@ export const profileSlice = createSlice({
     },
     addCustomProfile: (state) => {
       const newProfile = {
-        id: randomUUID(),
+        id: uuid(),
         name: 'New Profile',
         type: ProfileType.CUSTOM,
         order: state.profiles.length,
