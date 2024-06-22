@@ -71,10 +71,14 @@ export const profileSlice = createSlice({
       if (!state.selectedProfile) return;
       // Prevent editing default profiles
       if (state.selectedProfile.type === ProfileType.DEFAULT) return;
-      const selectedId = state.selectedProfile.id;
-      const profile = state.profiles.find((profile) => profile.id === selectedId);
-      if (profile) {
-        profile.name = action.payload.name;
+      // Prevent empty name
+      const newName = action.payload?.name?.trim();
+      if (newName) {
+        const selectedId = state.selectedProfile.id;
+        const profile = state.profiles.find((profile) => profile.id === selectedId);
+        if (profile) {
+          profile.name = newName;
+        }
       }
       state.isEditing = false;
     },
