@@ -5,6 +5,8 @@ import { ProfileState } from "@/types/redux";
 
 const initialState: ProfileState = {
   selectedProfile: undefined as Profile | undefined,
+  isEditing: false,
+  isDeleting: false,
   profiles: [
     {
       id: generateRandomHexString(),
@@ -63,6 +65,7 @@ export const profileSlice = createSlice({
         order: state.profiles.length,
       };
       state.profiles.push(newProfile);
+      state.selectedProfile = newProfile;
     },
     editProfile: (state, action) => {
       if (!state.selectedProfile) return;
@@ -73,13 +76,24 @@ export const profileSlice = createSlice({
       if (profile) {
         profile.name = action.payload.name;
       }
+      state.isEditing = false;
     },
     deleteProfile: (state) => {
       if (!state.selectedProfile) return;
       // Prevent deleting default profiles
       if (state.selectedProfile.type === ProfileType.DEFAULT) return;
       const selectedId = state.selectedProfile.id;
+      const selectedOrder = state.selectedProfile.order;
       state.profiles = state.profiles.filter((profile) => profile.id !== selectedId);
+      // Update order
+      state.profiles.forEach((profile) => {
+        if (profile.order > selectedOrder) {
+          profile.order -= 1;
+        }
+      });
+      // Set selected profile to previous one
+      state.selectedProfile = state.profiles.find((profile) => profile.order === selectedOrder);
+      state.isDeleting = false;
     },
     moveProfileUp: (state) => {
       if (!state.selectedProfile) return;
@@ -110,10 +124,36 @@ export const profileSlice = createSlice({
         state.selectedProfile = profile;
       }
     },
+    // Frontend only
+    showEdit: (state) => {
+      if (!state.selectedProfile) return;
+      state.isEditing = true;
+    },
+    hideEdit: (state) => {
+      state.isEditing = false;
+    },
+    showDelete: (state) => {
+      if (!state.selectedProfile) return;
+      state.isDeleting = true;
+    },
+    hideDelete: (state) => {
+      state.isDeleting = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { selectProfile, addCustomProfile, editProfile, deleteProfile, moveProfileUp, moveProfileDown, } = profileSlice.actions;
+export const {
+  selectProfile,
+  addCustomProfile,
+  editProfile,
+  deleteProfile,
+  moveProfileUp,
+  moveProfileDown,
+  showEdit,
+  hideEdit,
+  showDelete,
+  hideDelete,
+} = profileSlice.actions;
 
 export default profileSlice.reducer;
